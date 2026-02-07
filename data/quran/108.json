@@ -1,0 +1,13 @@
+{
+  "number": 108,
+  "name": "سُورَةُ الكَوثَرِ",
+  "englishName": "Al-Kawthar",
+  "englishNameTranslation": "The Abundance",
+  "revelationType": "Meccan",
+  "numberOfAyahs": 3,
+  "verses": [
+    { "number": 1, "text": "إِنَّآ أَعْطَيْنَٰكَ ٱلْكَوْثَرَ", "numberInSurah": 1 },
+    { "number": 2, "text": "فَصَلِّ لِرَبِّكَ وَٱنْحَرْ", "numberInSurah": 2 },
+    { "number": 3, "text": "إِنَّ شَانِئَكَ هُوَ ٱلْأَبْتَرُ", "numberInSurah": 3 }
+  ]
+}

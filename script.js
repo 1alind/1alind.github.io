@@ -1,5 +1,4 @@
 // --- Navigation Logic (Global) ---
-// Defined at the top to ensure availability
 window.navigateTo = function(viewId) {
   // Hide all views
   ['home-view', 'quran-view', 'bukhari-view'].forEach(id => {
@@ -22,7 +21,7 @@ window.navigateTo = function(viewId) {
       if (emptyState) emptyState.classList.remove('hidden');
   }
   
-  // Re-initialize icons just in case they need to re-render
+  // Re-initialize icons
   if (window.lucide) window.lucide.createIcons();
 };
 
@@ -48,26 +47,47 @@ window.showVerse = async function() {
     }, 100);
   }
 
-  verseTextEl.innerHTML = '<span class="text-base text-slate-400 animate-pulse flex items-center justify-center gap-2 py-8"><i data-lucide="loader-2" class="animate-spin w-5 h-5"></i> جاري تحميل النص...</span>';
+  verseTextEl.innerHTML = '<span class="text-base text-slate-400 animate-pulse flex items-center justify-center gap-2 py-8"><i data-lucide="loader-2" class="animate-spin w-5 h-5"></i> جاري تحميل النص من الملفات المحلية...</span>';
   if (window.lucide) window.lucide.createIcons();
 
   try {
       const surahNum = surahSelect.value;
-      const ayahNum = ayahInput.value;
-      const response = await fetch(`https://api.alquran.cloud/v1/ayah/${surahNum}:${ayahNum}`);
+      const ayahNum = parseInt(ayahInput.value);
+      
+      // Fetch from local file: data/quran/1.json
+      const response = await fetch(`data/quran/${surahNum}.json`);
+      
+      if (!response.ok) {
+          throw new Error("File not found");
+      }
+
       const data = await response.json();
       
-      if(data.status === 'OK') {
-          verseTextEl.textContent = data.data.text;
-          verseRefEl.textContent = `سورة ${data.data.surah.name} • الآية ${data.data.numberInSurah}`;
+      // Find the specific verse in the JSON array
+      const verse = data.verses.find(v => v.numberInSurah === ayahNum);
+      
+      if(verse) {
+          verseTextEl.textContent = verse.text;
+          verseRefEl.textContent = `سورة ${data.name} • الآية ${verse.numberInSurah}`;
       } else {
-          verseTextEl.textContent = "حدث خطأ في استرجاع النص، يرجى المحاولة مرة أخرى.";
+          verseTextEl.textContent = "رقم الآية غير موجود في الملف.";
       }
 
   } catch (error) {
-      verseTextEl.textContent = "تعذر الاتصال بالخادم. تأكد من اتصالك بالإنترنت.";
       console.error(error);
+      verseTextEl.innerHTML = `<div class="text-red-400 text-sm leading-relaxed p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+        <strong>خطأ: لم يتم العثور على ملف السورة</strong><br/>
+        (data/quran/${surahSelect.value}.json)<br/><br/>
+        يرجى فتح <a href="download_quran.html" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">أداة التحميل (download_quran.html)</a> لتحميل ملفات البيانات، ثم وضعها في مجلد <code>data/quran/</code>.
+      </div>`;
   }
+
+  const randomCritiques = [
+    "<p>إحدى الإشكاليات الرئيسية في هذا الموضع تتعلق بالتوافق بين النص والسياق التاريخي الموثق.</p>",
+    "<p>يلاحظ الناقد هنا وجود انقطاع في السياق السردي، وهو ما يفسره بعض الباحثين بكونه نتاجاً لعملية جمع وتدوين لاحقة.</p>",
+    "<p>من المنظور الأخلاقي المعاصر، يطرح هذا الحكم إشكاليات عدة، خاصة عند محاولة تطبيقه خارج إطاره الزمني.</p>",
+    "<p>هناك تباين واضح بين التفسير التقليدي وما تظهره الاكتشافات العلمية الحديثة.</p>"
+  ];
 
   const randomIndex = Math.floor(Math.random() * randomCritiques.length);
   critiqueTextEl.innerHTML = `
@@ -79,7 +99,6 @@ window.showVerse = async function() {
 };
 
 // --- Tailwind Configuration ---
-// Wrap in check to prevent crashing if tailwind isn't loaded yet
 if (typeof tailwind !== 'undefined') {
   tailwind.config = {
     theme: {
@@ -92,62 +111,20 @@ if (typeof tailwind !== 'undefined') {
           primary: {
             50: '#f0f9ff',
             100: '#e0f2fe',
-            500: '#6366f1', // Indigo
+            500: '#6366f1',
             600: '#4f46e5',
             700: '#4338ca',
           },
-          surface: '#1e293b', // Slate 800
-          background: '#0f172a', // Slate 900
+          surface: '#1e293b',
+          background: '#0f172a',
         }
       }
     }
   };
 }
 
-// --- Data ---
-const surahs = [
-  { number: 1, name: "الفاتحة", verses: 7 },
-  { number: 2, name: "البقرة", verses: 286 },
-  { number: 3, name: "آل عمران", verses: 200 },
-  { number: 4, name: "النساء", verses: 176 },
-  { number: 5, name: "المائدة", verses: 120 },
-  { number: 6, name: "الأنعام", verses: 165 },
-  { number: 7, name: "الأعراف", verses: 206 },
-  { number: 8, name: "الأنفال", verses: 75 },
-  { number: 9, name: "التوبة", verses: 129 },
-  { number: 10, name: "يونس", verses: 109 },
-  { number: 11, name: "هود", verses: 123 },
-  { number: 12, name: "يوسف", verses: 111 },
-  { number: 13, name: "الرعد", verses: 43 },
-  { number: 14, name: "إبراهيم", verses: 52 },
-  { number: 15, name: "الحجر", verses: 99 },
-  { number: 16, name: "النحل", verses: 128 },
-  { number: 17, name: "الإسراء", verses: 111 },
-  { number: 18, name: "الكهف", verses: 110 },
-  { number: 19, name: "مريم", verses: 98 },
-  { number: 20, name: "طه", verses: 135 },
-  { number: 21, name: "الأنبياء", verses: 112 },
-  { number: 22, name: "الحج", verses: 78 },
-  { number: 23, name: "المؤمنون", verses: 118 },
-  { number: 24, name: "النور", verses: 64 },
-  { number: 25, name: "الفرقان", verses: 77 },
-];
-
-if(surahs.length < 114) {
-   for(let i=surahs.length+1; i<=114; i++) {
-       surahs.push({ number: i, name: `سورة رقم ${i}`, verses: 50 });
-   }
-}
-
-const randomCritiques = [
-  "<p>إحدى الإشكاليات الرئيسية في هذا الموضع تتعلق بالتوافق بين النص والسياق التاريخي الموثق. تشير الدراسات المقارنة إلى أن المفردات المستخدمة هنا كانت تحمل دلالات مختلفة في عصر ما قبل الإسلام، مما يغير المعنى المقصود تماماً عند إعادة قراءته في ضوء اللسانيات الحديثة.</p>",
-  "<p>يلاحظ الناقد هنا وجود انقطاع في السياق السردي، وهو ما يفسره بعض الباحثين بكونه نتاجاً لعملية جمع وتدوين لاحقة. هذا الانتقال المفاجئ في الموضوع يثير تساؤلات حول وحدة النص وبنيته الأصلية.</p>",
-  "<p>من المنظور الأخلاقي المعاصر، يطرح هذا الحكم إشكاليات عدة، خاصة عند محاولة تطبيقه خارج إطاره الزمني. الجمود على ظاهر النص هنا قد يؤدي إلى تعارض صريح مع مبادئ حقوق الإنسان العالمية المتفق عليها اليوم.</p>",
-  "<p>هناك تباين واضح بين التفسير التقليدي وما تظهره الاكتشافات العلمية الحديثة. محاولات التوفيق (الإعجاز العلمي) هنا تبدو متكلفة وتفتقر إلى المنهجية العلمية الرصينة، حيث يتم ليّ عنق النص ليوافق حقيقة مكتشفة حديثاً.</p>"
-];
-
 // --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   if (window.lucide) window.lucide.createIcons();
   
   const surahSelect = document.getElementById('surah-select');
@@ -155,24 +132,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const ayahHint = document.getElementById('ayah-max-hint');
 
   if (surahSelect && ayahInput && ayahHint) {
-    surahs.forEach(surah => {
-      const option = document.createElement('option');
-      option.value = surah.number;
-      option.textContent = `${surah.number}. ${surah.name}`;
-      surahSelect.appendChild(option);
-    });
+    try {
+        // Fetch the list of Surahs from the index file
+        const response = await fetch('data/surahs.json');
+        const surahs = await response.json();
+        
+        // Save to window for access in change handler
+        window.allSurahsData = surahs;
 
-    surahSelect.addEventListener('change', () => {
-      const surahData = surahs.find(s => s.number == surahSelect.value);
-      if(surahData) {
-          ayahHint.textContent = `العدد المتاح: ${surahData.verses}`;
-          ayahInput.max = surahData.verses;
-          if(parseInt(ayahInput.value) > surahData.verses) {
-              ayahInput.value = surahData.verses;
+        surahs.forEach(surah => {
+          const option = document.createElement('option');
+          option.value = surah.number;
+          option.textContent = `${surah.number}. ${surah.name}`;
+          surahSelect.appendChild(option);
+        });
+
+        // Setup Change Listener
+        surahSelect.addEventListener('change', () => {
+          const surahData = window.allSurahsData.find(s => s.number == surahSelect.value);
+          if(surahData) {
+              ayahHint.textContent = `العدد المتاح: ${surahData.verses}`;
+              ayahInput.max = surahData.verses;
+              // Reset input if out of bounds
+              if(parseInt(ayahInput.value) > surahData.verses) {
+                  ayahInput.value = 1;
+              }
           }
-      }
-    });
+        });
 
-    surahSelect.dispatchEvent(new Event('change'));
+        // Trigger initial state
+        surahSelect.dispatchEvent(new Event('change'));
+
+    } catch (e) {
+        console.error("Failed to load surahs.json", e);
+        ayahHint.textContent = "خطأ في تحميل قائمة السور";
+    }
   }
 });
