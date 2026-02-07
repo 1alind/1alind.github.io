@@ -1,0 +1,65 @@
+/* Base styles */
+body {
+  background-color: #0f172a;
+  background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #f8fafc;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure images/media don't overflow */
+img, video, canvas, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Typography */
+.quran-text {
+  font-family: 'Amiri', serif;
+  line-height: 2.4;
+  font-size: 1.5rem; /* Mobile default */
+  text-align: center;
+  word-wrap: break-word; /* Ensure long words don't break layout */
+}
+
+@media (min-width: 768px) {
+  .quran-text {
+    line-height: 2.8;
+    font-size: 2rem; /* Larger Desktop size */
+  }
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glass Component */
+.glass-panel {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
