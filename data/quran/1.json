@@ -1,14 +1,13 @@
 {
   "number": 1,
   "name": "سُورَةُ ٱلْفَاتِحَةِ",
-  "englishName": "Al-Fatiha",
+  "englishName": "Al-Faatiha",
   "englishNameTranslation": "The Opening",
   "revelationType": "Meccan",
-  "numberOfAyahs": 7,
-  "verses": [
+  "ayahs": [
     {
       "number": 1,
-      "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+      "text": "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
       "numberInSurah": 1,
       "juz": 1,
       "manzil": 1,
